@@ -1,0 +1,157 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <algorithm>
+using namespace std;
+
+class Vector {
+private:
+	string* arr;
+	int N, maxSize;
+
+public:
+
+	Vector(int size) {
+		arr = new string[size];
+		N = 0;
+		maxSize = size;
+	}
+
+	void pushBack(const string& data) {
+		if (N == maxSize - 1) {
+			string* temp = arr;
+			maxSize = maxSize * 2;
+			arr = new string[maxSize];
+			for (int i = 0; i <= N; i++) {
+				arr[i] = temp[i];
+			}
+			delete[] temp;
+		}
+		arr[N++] = data;
+	}
+
+	void theCurrent() {
+		cout << N << endl;
+	}
+
+	void theMaxSize() {
+		string a = "i";
+		string b = "i";
+		cout << maxSize << endl;
+	}
+
+	int getMaxSize() {
+		return maxSize;
+	}
+
+	void printVector() {
+		for (int i = 0; i <= N; i++) {
+			cout << arr[i] << " ";
+		}
+		cout << endl << endl;
+	}
+
+	void quickSort(int start = NULL, int end = NULL) {
+		if (end == NULL) {
+			end = N;
+		}
+
+		if (start == NULL) {
+			start = 0;
+		}
+
+		int k = start, j = end;
+		int low = static_cast<int>((end + start) / 2);
+		string c = arr[low];
+		string temp;
+
+		do {
+			while (arr[k] < c) k++;
+			while (arr[j] > c) j--;
+
+			if (k <= j) {
+				temp = arr[k];
+				arr[k] = arr[j];
+				arr[j] = temp;
+				k++;
+				j--;
+			}
+		} while (k <= j);
+
+		if (end - k > 0) quickSort(k, end);
+		if (j - start > 0) quickSort(start, j);	
+	}
+
+	void load(const char* filename) {
+		const char zn[6] = { '.', ',', '!', '?', ':', ';' };
+		ifstream fin;
+		fin.open(filename);
+		if (!fin.is_open()) {
+			cout << "Ошибка открытия файла" << endl;
+		}
+		else {
+			string str;
+			while (!fin.eof()) {
+				str = "";
+				fin >> str;
+				
+				for (int i = 0; i < sizeof(zn); i++) {
+					if (str.find(zn[i]) != string::npos) {
+						str.erase(str.find(zn[i]));
+					}
+				}
+				transform(str.begin(), str.end(), str.begin(), tolower);
+				pushBack(str);
+			}
+		}
+		fin.close();
+	}	
+
+	void showTable() {
+		struct data {
+			string word;
+			int count;
+
+			data(string word = "", int count = 1) {
+				this->word = word;
+				this->count = count;
+			}
+		};
+
+		data* arr = new data[N];
+		int current = 0;
+
+		for (int i = 0; i <= N; i++) {
+			bool flag = false;
+			for (int j = 0; j < N; j++) {
+				if (this->arr[i] == arr[j].word) {
+					arr[j].count++;
+					flag = true;
+					break;
+				} 
+			}
+			if (!flag) {
+				arr[current++] = this->arr[i];
+			}
+		}
+
+		for (int i = 0; i < current; i++) {
+			cout << arr[i].word << " - " << arr[i].count << endl;
+		}
+
+	}
+};
+
+int main() {
+	setlocale(0, "");
+
+	Vector vector = Vector(1);
+
+	vector.load("file.txt");
+	vector.quickSort();
+	vector.printVector();
+	vector.showTable();
+
+
+	return 0;
+}

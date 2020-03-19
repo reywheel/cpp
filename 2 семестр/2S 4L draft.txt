@@ -1,0 +1,207 @@
+#include <iostream>
+#include <ctime>
+using namespace std;
+
+
+class doublyLinkedList {
+private:
+	struct Item {
+		int data;
+		Item* next;
+		Item* prev;
+
+		Item(int data) {
+			this->data = data;
+			prev = NULL;
+			next = NULL;
+		}
+	};
+
+	struct iterator {
+		Item* i;
+		iterator() : i(0) {} //конструктор по умолчанию; инициализация //нулевым указателем
+		iterator(Item* lnk) : i(lnk) {} //инициализация адресом узла
+		iterator(const iterator& it) : i(it.i) {}//конструктор копии
+		iterator& operator=(const iterator& it) { i = it.i; return *this; }//приравниваем значение другого итератора;
+		int operator*() { return i->data; }//разыменование итератора
+		bool operator ==(const iterator& it) { return i = it.i; }
+		bool operator !=(const iterator& it) { return i != it.i; }
+		iterator& operator ++() { i = i->next; return *this; }//инкрементируем //адрес, возвращаем итератор по ссылке
+		iterator operator ++(int) { Item* lnk = i; i = i->next; return lnk; }//постфиксные версии получают дополнительный неиспользуемый //параметр типа int, чтобы компилятор мог отличить их от префиксных;
+		iterator& operator --() { i = i->prev; return *this; }
+		iterator operator --(int) { Item* lnk = i; i = i->prev; return lnk; }
+		//аналогичным способом реализуем декременты
+
+	};
+
+	Item* head, *tail;
+	int size = 0;
+	iterator first = iterator(head);
+	iterator last = iterator(tail);
+
+	void initList(int data) {
+		head = new Item(data);
+		tail = head;
+		size++;
+	}
+
+public:
+	doublyLinkedList() {
+		head = NULL;
+		tail = NULL;
+	}
+
+	bool isEmpty() {
+		if (head == NULL) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	void theHeadData() {
+		if (head != NULL) {
+			cout << head->data << endl << endl;
+		}
+		else {
+			cout << "Ошибка!" << endl << endl;
+		}
+	}
+
+	void theTailData() {
+		if (head != NULL) {
+			cout << tail->data << endl << endl;
+		}
+		else {
+			cout << "Ошибка!" << endl << endl;
+		}
+	}
+
+	void appendItem(int data) {
+		if (head == NULL) {
+			initList(data);
+		}
+		else {
+			Item* temp = new Item(data);
+			tail->next = temp;
+			temp->prev = tail;
+			tail = temp;
+			size++;
+		}
+	}
+
+	void fillRandom(int size, int accuracy) {
+		srand(time(NULL));
+		for (int i = 0; i < size; i++) {
+			if (head == NULL) {
+				initList(rand() % accuracy);
+			}
+			else {
+				Item* temp = new Item(rand() % accuracy);
+				tail->next = temp;
+				temp->prev = tail;
+				tail = temp;
+				this->size++;
+			}
+		}
+	}
+
+	void printList() {
+		if (head != NULL) {
+			Item* temp = head;
+			while (temp->next != NULL) {
+				cout << temp->data << endl;
+				temp = temp->next;
+			}
+			cout << temp->data << endl << endl;
+		}
+		else {
+			cout << "Список пуст!" << endl << endl;
+		}
+	}
+
+	int getMax() {
+		Item* temp = head;
+		int max = temp->data;
+		temp = temp->next;
+		while (temp->next != NULL) {
+			if (temp->data > max) {
+				max = temp->data;
+			}
+			temp = temp->next;
+		}
+		if (temp->data > max) {
+			max = temp->data;
+		}
+
+		return max;
+	}
+
+	int getSize() {
+		return size;
+	}
+
+	void copyToListAfterData(doublyLinkedList& list, int data) {
+		Item* temp = head;
+		bool flag = false;
+		while (temp->next != NULL) {
+			if (flag) list.appendItem(temp->data);
+			if (temp->data == data) flag = true;
+
+			temp = temp->next;
+		}
+		if (flag) list.appendItem(temp->data);
+	}
+
+	void insertionSort(iterator first, iterator last)
+	{
+		int nElems = getSize();
+		iterator in;
+		iterator out = first;
+
+		while (out != last) // out - разделительный маркер
+		{
+			iterator temp = out; // Скопировать помеченный элемент
+			in = out; // Начать перемещения с out
+			while (in > first && a[in - 1] >= temp) // Пока не найден меньший элемент
+			{
+				a[in] = a[in - 1]; // Сдвинуть элемент вправо
+				--in; // Перейти на одну позицию влево
+			}
+			a[in] = temp; // Вставить помеченный элемент
+		}
+	}
+
+	find(it first, it last, T key)
+	{
+
+		while (first != last)
+
+			if (*first++ == key) return true;
+
+		return false;
+
+	}
+};
+
+
+
+int main() {
+	setlocale(0, "");
+	doublyLinkedList list1 = doublyLinkedList();
+	doublyLinkedList list2 = doublyLinkedList();
+
+	list1.fillRandom(10, 20);
+	list1.printList();
+	cout << list1.getMax() << endl << endl;
+
+	list1.copyToListAfterData(list2, list1.getMax());
+	list2.printList();
+
+	cout << list1.getSize() << endl << endl;
+	cout << list2.getSize() << endl << endl;
+	
+
+	return 0;
+}

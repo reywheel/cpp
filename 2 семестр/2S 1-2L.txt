@@ -1,0 +1,357 @@
+#include <iostream>
+using namespace std;
+
+class classQueue {
+private:
+	struct queue {
+		int data;
+		queue* link;
+
+		queue(int data, queue* link = NULL) {
+			this->data = data;
+			this->link = link;
+		}
+	};
+
+	queue* head = NULL, * lastItem = NULL;
+	int size = 0;
+
+	void initQueue(int data) {
+		queue* head = new queue(data);
+		this->head = head;
+		lastItem = head;
+	}
+
+public:
+
+	void appendItem(int data) {
+		if (head == NULL) {
+			initQueue(data);
+		}
+		else {
+			queue* item = new queue(data);
+			lastItem->link = item;
+			lastItem = item;
+		}
+		size++;
+	}
+
+	void printQueue() {
+		queue* item = head;
+
+		while (item->link != NULL) {
+			cout << item->data << " ";
+			item = item->link;
+		}
+
+		cout << item->data << endl;
+	}
+
+	int pop_front() {
+		queue* temp = head;
+		head = head->link;
+		int data = temp->data;
+		delete temp;
+		size--;
+
+		return data;
+	}
+
+	int getSize() {
+		return size;
+	}
+
+	void deleteQueue() {
+		while (head != NULL) {
+			pop_front();
+		}
+	}
+};
+
+class classStack {
+private:
+	struct stack {
+		int data;
+		stack* link;
+
+		stack(int data, stack* link = NULL) {
+			this->data = data;
+			this->link = link;
+		}
+	};
+
+	stack* head = NULL, * lastItem = NULL;
+	int size = 0;
+
+	void initStack(int data) {
+		stack* head = new stack(data);
+		this->head = head;
+	}
+
+public:
+
+	void appendItem(int data) {
+		if (head == NULL) {
+			initStack(data);
+		}
+		else {
+			stack* item = new stack(data);
+			item->link = head;
+			head = item;
+		}
+		size++;
+	}
+
+	void printStack() {
+		stack* item = head;
+
+		while (item->link != NULL) {
+			cout << item->data << " ";
+			item = item->link;
+		}
+
+		cout << item->data << endl;
+	}
+
+	int pop_front() {
+		stack* temp = head;
+		head = head->link;
+		int data = temp->data;
+		delete temp;
+		size--;
+
+		return data;
+	}
+
+	int getSize() {
+		return size;
+	}
+
+	void deleteStack() {
+		while (head != NULL) {
+			pop_front();
+		}
+	}
+};
+
+class StackArray {
+private:
+	int maxSize;
+	int top;
+	int* arr;
+
+public:
+
+	StackArray(int size) {
+		maxSize = size;
+		arr = new int[size];
+		top = -1;
+	}
+
+	int push(int elem) {
+		arr[++top] = elem;
+
+		return 0;
+	}
+
+	int pop() {
+		return arr[top--];
+	}
+
+	int peek() {
+		return arr[top];
+	}
+
+	bool isEmpty() {
+		return (top == -1);
+	}
+
+	bool isFull() {
+		return (top == maxSize - 1);
+	}
+
+	int print() {
+		for (int i = 0; i < maxSize; i++) {
+			cout << arr[i] << " ";
+		}
+		cout << endl << endl;
+
+		return 0;
+	}
+
+	int remove() {
+		delete[] arr;
+
+		return 0;
+	}
+};
+
+class queueArray {
+private:
+	int maxSize;
+	int* arr;
+	int top;
+
+public:
+	int head;
+
+	queueArray(int size) {
+		maxSize = size;
+		arr = new int[size + 1];
+		head = top = -1;
+		arr[0] = NULL;
+	}
+
+	int push(int elem) {
+		arr[++top] = elem;
+		arr[top + 1] = NULL;
+
+		return 0;
+	}
+
+	int pop() {
+		return arr[top--];
+	}
+
+	int popFront() {
+		return arr[head++];
+	}
+
+	int peek() {
+		return arr[top];
+	}
+
+	int getHead() {
+		return arr[head];
+	}
+
+	bool isEmpty() {
+		return (top == head);
+	}
+
+	int print() {
+		int temp = head;
+		//while (++temp != NULL) {
+		//	cout << arr[temp] << temp;
+		//}
+		for (int i = 0; i < maxSize; i++) {
+			cout << arr[i] << ' ';
+		}
+
+		cout << endl << endl;
+
+		return 0;
+	}
+
+	int remove() {
+		delete[] arr;
+
+		return 0;
+	}
+};
+
+
+
+
+int main() {
+	setlocale(0, "");
+
+	classQueue queue1;
+	classQueue queue2;
+	classStack stack1;
+	classStack stack2;
+	StackArray stackArr1 = StackArray(101);
+	StackArray stackArr2 = StackArray(50);
+	queueArray queueArr1 = queueArray(101);
+	queueArray queueArr2 = queueArray(50);
+
+	cout << endl << "--------------- Очередь списком ---------------" << endl << endl;
+
+	for (int i = -50; i <= 50; i++) {
+		queue1.appendItem(i);
+	}
+
+	queue1.printQueue();
+
+	cout << endl;
+
+	int size1 = queue1.getSize();
+
+	for (int i = 0; i < size1; i++) {
+		int data = queue1.pop_front();
+		if (data > 0) {
+			queue2.appendItem(data);
+		}
+	}
+
+	queue2.printQueue();
+
+	queue2.deleteQueue();
+
+	cout << endl << "--------------- Очередь массивом ---------------" << endl << endl;
+
+	for (int i = -50; i <= 50; i++) {
+		queueArr1.push(i);
+	};
+
+	for (int i = queueArr1.head; i < 101; i++) {
+		if (queueArr1.getHead() > 0) {
+			queueArr2.push( queueArr1.popFront() );
+		}
+		else {
+			queueArr1.popFront();
+		}
+	}
+
+	queueArr1.print();
+	queueArr2.print();
+
+	queueArr1.remove();
+	queueArr2.remove();
+
+	cout << endl << "--------------- Стэк списком ---------------" << endl << endl;
+
+	for (int i = -50; i <= 50; i++) {
+		stack1.appendItem(i);
+	}
+
+	stack1.printStack();
+
+	cout << endl;
+
+	size1 = stack1.getSize();
+
+	for (int i = 0; i < size1; i++) {
+		int data = stack1.pop_front();
+		if (data > 0) {
+			stack2.appendItem(data);
+		}
+	}
+
+	stack2.printStack();
+
+	stack2.deleteStack();
+
+	cout << endl << "--------------- Стэк массивом ---------------" << endl << endl;
+
+	for (int i = -50; i <= 50; i++) {
+		stackArr1.push(i);
+	};
+
+	for (int i = 0; i < 101; i++) {
+		if (stackArr1.peek() > 0) {
+			stackArr2.push(stackArr1.pop());
+		}
+		else {
+			stackArr1.pop();
+		}
+	}
+
+	stackArr1.print();
+	stackArr2.print();
+
+	stackArr1.remove();
+	stackArr2.remove();
+
+	return 0;
+}
