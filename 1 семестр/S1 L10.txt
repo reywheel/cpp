@@ -1,0 +1,109 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdlib.h>
+using namespace std;
+
+string name;
+
+int menu();
+void input();
+void output();
+
+int main() {
+	setlocale(0, "");
+	bool flag = true;
+	while (flag) {
+		switch (menu())
+		{
+		case 1: input(); flag = false; break;
+		case 2: output(); flag = false; break;
+		default: cout << "Такой команды не существует! Повторите попытку!" << endl << endl;
+		}
+	}
+}
+
+int menu() {
+	cout << "Выберите команду:" << endl;
+	cout << "1: Записать данные в файл" << endl;
+	cout << "2: Считать данные из файла" << endl;
+	int i;
+	cin >> i;
+	return i;
+}
+
+void input() {
+	cout << "Введите желаемое имя файла: " << endl;
+	cin >> name;
+	name += ".txt";
+
+	ofstream fout;
+	fout.open(name);
+
+	if (!fout.is_open()) {
+		cout << "Не удалось открыть файл!" << endl;
+	}
+	else {
+		int n;
+		cout << "Введите количество сотрудников:" << endl;
+		cin >> n;
+		int i;
+		cout << "Вводите ФИО, количество рабочих часов, стоимость рабочего часа:" << endl;
+		for (i = 0; i < n; i++)
+		{
+			string f, i, o;
+			int amount, rate;
+			cin >> f >> i >> o >> amount >> rate;
+			fout << f << " " << i << " " << o << " " << amount << " " << rate << endl;
+		}
+	}
+	fout.close();
+
+}
+
+void output() {
+	cout << "Введите имя файла, из которого будут считываться данные: " << endl;
+	cin >> name;
+	name += ".txt";
+
+	ifstream fin;
+	fin.open(name);
+
+	ofstream fout;
+	fout.open("result.txt");
+
+	if (!fin.is_open()) {
+		cout << "Не удалось открыть файл!" << endl;
+	}
+	else {
+		string str;
+		int count = 0;
+		int sum = 0;
+		int zarp = 0;
+		while (!fin.eof()) {
+			count++;
+			str = "";
+			fin >> str;
+			if ((count == 4) || (count == 5)) {
+				sum += atoi(str.c_str());
+				if (count == 5) {
+					if (sum - atoi(str.c_str()) > 144) {
+						zarp = (sum - atoi(str.c_str())) * atoi(str.c_str()) + (sum - atoi(str.c_str()) - 144) * atoi(str.c_str());
+					}
+					else {
+						zarp = (sum - atoi(str.c_str())) * atoi(str.c_str());
+					}
+					fout << zarp << endl;
+					cout << zarp << endl;
+					count = zarp = sum = 0;
+				}
+			}
+			else {
+				fout << str << " ";
+				cout << str << " ";
+			}
+		}
+	}
+	fout.close();
+	fin.close();
+}

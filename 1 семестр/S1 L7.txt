@@ -1,0 +1,49 @@
+#include <iostream>
+#include <Windows.h>
+using namespace std;
+
+int timer(char[6]);
+
+int main(){	
+	setlocale(0, "");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	struct bus {
+		int number;
+		char type[10];
+		char destination[20];
+		char departure[6];
+		char arrival[6];
+	};
+
+	bus mass_bus[100];
+	int n, i;
+	char destination[20];
+	char time[6];
+	
+	cout << "¬ведите количество автобусов: " << endl;
+	cin >> n;
+	for (i = 0; i < n; i++) {
+		cout << "¬ведите номер, тип, место назначени€, врем€ отправки и врем€ прибыти€ автобуса є " << i + 1 << endl;
+		cin >> mass_bus[i].number;
+		cin >> mass_bus[i].type;
+		cin >> mass_bus[i].destination;
+		cin >> mass_bus[i].departure;
+		cin >> mass_bus[i].arrival;
+	}
+	cout << "¬ведите место назначени€ и врем€, которые вам нужны: " << endl;
+	cin >> destination >> time;
+
+	for (i = 0; i < n; i++) {
+		if ((strcmp(destination, mass_bus[i].destination) == 0) && (timer(mass_bus[i].arrival) < timer(time))) {
+			cout << mass_bus[i].number << " " << mass_bus[i].type << " " << mass_bus[i].destination << " " << mass_bus[i].departure << " " << mass_bus[i].arrival << endl;
+		}
+	}
+
+}
+
+int timer(char time[6]) {
+	int result;
+	result = (time[0] - '0') * 10 * 60 + (time[1] - '0') * 60 + (time[3] - '0') * 10 + (time[4] - '0');
+	return result;
+}

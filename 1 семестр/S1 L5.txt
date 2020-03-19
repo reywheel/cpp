@@ -1,0 +1,56 @@
+﻿#include <iostream>
+using namespace std;
+
+
+int main()
+{
+	int i, j, n, m, sum = 0, count = 0;
+	setlocale(0, "");
+
+	cout << "Введите количество строк: "; 
+	cin >> m;
+	cout << "Введите количество столбцов: "; 
+	cin >> n;
+
+	// Создание динамического массива
+	double** mass; 
+	mass = new double*[n];
+	for (i = 0; i < n; i++){
+		mass[i] = new double[m];
+	}
+
+	// Заполнение массива
+	for (i = 0; i < m; i++){ 
+		cout << "Введите элементы " << i + 1 << " строки: ";
+		for (j = 0; j < n; j++){
+			cin >> mass[i][j];
+		}
+	}
+
+	// Вывод заполненного массива
+	cout << "\n";
+	for (i = 0; i < m; i++) {
+		for (j = 0; j < n; j++) {
+			cout << mass[i][j] << " ";
+		}
+		cout << "\n";
+	}
+
+	// Подсчёт особых чисел
+	for (j = 0; j < m; j++) {
+		for (i = 0; i < n; i++) {
+			sum += mass[i][j];
+		}
+		for (i = 0; i < n; i++) {
+			if (mass[i][j] > sum - mass[i][j]) {
+				count++;
+			}
+		}
+		sum = 0;
+	}
+	
+	cout << "Количество особых чисел: " << count;
+
+	return(0);
+}
+

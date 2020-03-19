@@ -1,0 +1,153 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string name;
+
+struct worker {
+	string fio;
+	int amount;
+	int tariff;
+} workers[100];
+
+void quickSort(worker st[], int n, string v);
+void chooseSort(worker st[], int n, string v);
+string fullFind(worker st[], int n, int x);
+string interFind(worker st[], int n, int x);
+
+
+int main() {
+	setlocale(0, "");
+	int n, z, j, c;
+	cout << "¬ведите количество сотрудников: ";
+	cin >> n;
+	cout << endl << "¬водите ‘»ќ, количество рабочих часов, стоимость рабочего часа:" << endl;
+	for (j = 0; j < n; j++)
+	{
+		string f, i, o;
+		cin >> f >> i >> o >> workers[j].amount >> workers[j].tariff;
+		workers[j].fio = f + " " + i + " " + o;
+	}
+	cout << endl << "¬ыберите операцию: " << endl;
+	cout << "1 Ч быстра€ сортировка" << endl;
+	cout << "2 Ч сортировка выбором" << endl;
+	cout << "3 Ч поиск полным перебором" << endl;
+	cout << "4 Ч интерпол€ционный поиск" << endl;
+	cin >> z;
+
+	switch (z) {
+		case 1: quickSort(workers, n, "yes"); break;
+		case 2: chooseSort(workers, n, "yes"); break;
+		case 3:
+			cout << endl << "¬ведите количество часов дл€ поиска: ";
+			cin >> c;
+			cout << endl << fullFind(workers, n, c) << endl;
+			break;
+		case 4:
+			cout << endl << "¬ведите количество часов дл€ поиска: ";
+			cin >> c;
+			cout << endl << interFind(workers, n, c) << endl;
+			break;
+		default: break;
+	}
+	return 0;
+}
+
+void quickSort(worker st[], int n, string v = "no") {
+	struct {
+		int l;
+		int r;
+	} stack[20];
+
+	int i, j, left, right, x, s = 0;
+	worker t;
+
+	stack[s].l = 0; stack[s].r = n - 1;
+	while (s != -1)
+	{
+		left = stack[s].l; right = stack[s].r;
+		s--;
+		while (left < right)
+		{
+			i = left; j = right; x = st[(left + right) / 2].amount;
+			while (i <= j)
+			{
+				while (st[i].amount < x) i++;
+				while (st[j].amount > x) j--;
+				if (i <= j) {
+					t = st[i];  st[i] = st[j];  st[j] = t;
+					i++;  j--;
+				}
+			}
+			if ((j - left) < (right - i))
+			{
+				if (i < right) { s++;  stack[s].l = i;  stack[s].r = right; } right = j;
+			}
+			else {
+				if (left < j) { s++;  stack[s].l = left;  stack[s].r = j; }
+				left = i;
+			}
+		}
+	}
+	if (v == "yes") {
+		cout << endl;
+		for (j = 0; j < n; j++) {
+			cout << st[j].fio << " " << st[j].amount << " " << st[j].tariff << endl;
+		}
+		cout << endl;
+	}
+}
+
+void chooseSort(worker st[], int n, string v = "no") {
+	int imin, i, j;
+	worker t;
+
+	for (i = 0; i < n - 1; i++)
+	{
+		imin = i;
+		for (j = i + 1; j < n; j++)
+			if (st[imin].amount > st[j].amount) imin = j;
+		if (imin != i)
+		{
+			t = st[imin];
+			st[imin] = st[i];
+			st[i] = t;
+		}
+	}
+
+	if (v == "yes") {
+		cout << endl;
+		for (j = 0; j < n; j++) {
+			cout << st[j].fio << " " << st[j].amount << " " << st[j].tariff << endl;
+		}
+		cout << endl;
+	}
+}
+
+string fullFind(worker st[], int n, int x) {
+	for (int i = 0; i < n; i++)
+		if (st[i].amount == x) {
+			return st[i].fio;
+		}
+	if (true) {
+		return "Ёлемента с таким значением не существует!";
+	}
+}
+
+string interFind(worker st[], int n, int x) {
+	quickSort(st, n);
+	int i = 0, j = n - 1, m;
+	while (i < j)
+	{
+		if (st[i].amount == st[j].amount)      // ѕредотвращение делени€ на нуль 
+			if (st[i].amount == x) return st[i].fio;
+
+		m = i + (j - i) * (x - st[i].amount) / (st[j].amount - st[i].amount);
+
+		if (st[m].amount == x) return st[m].fio;   
+		else if (x > st[m].amount) i = m + 1; else j = m - 1;
+	}
+	if (true) {
+		return "Ёлемента с таким значением не существует!";
+	}
+}

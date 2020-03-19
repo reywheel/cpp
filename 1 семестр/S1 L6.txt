@@ -1,0 +1,25 @@
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+
+int main(){	
+	setlocale(0, "");
+	char str[101], buff[100] = "";
+	int i, k = 0;
+	cout << "¬ведите строку: " << endl;
+	gets_s(str);
+	for (i = 0; i < 100; i++){
+		if (str[i] == '1' || str[i] == '0') {
+			buff[k] += str[i];
+			k++;
+		}
+		else {
+			if (strlen(buff) % 2 == 0) {
+				cout << buff << " ";
+			}
+			memset(buff, 0, 100);
+			k = 0;
+		}
+	}
+}

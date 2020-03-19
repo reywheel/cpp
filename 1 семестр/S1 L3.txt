@@ -1,0 +1,29 @@
+﻿#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main()
+{
+	setlocale(0, "");
+	double a, b, h, y, s, p, j, i;
+	int n = 80;
+
+	cout << "Введите переменные a и b: " << endl;
+	cin >> a >> b;
+	cout << endl;
+
+	h = (b - a) / 10;
+
+	for (i = a; i <= b; i += h)
+	{
+		s = p = 1;
+		for (j = 1; j <= n; j++)
+		{
+			p *= -1* pow(i, 2) /( j * 2 * (j * 2 - 1));
+			s += p;
+		}
+		y = cos(i);
+		cout << i << setw(15) << y << setw(15) << s << endl;
+	}
+	return 0;
+}

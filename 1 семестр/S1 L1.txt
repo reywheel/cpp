@@ -1,0 +1,21 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	double x, y, z, s;
+
+	cout << "¬ведите переменную x: ";
+	cin >> x;
+	cout << "¬ведите переменную y: ";
+	cin >> y;
+	cout << "¬ведите переменную z: ";
+	cin >> z;
+
+	s = pow(fabs(cos(x) - cos(y)), 1 + 2 * pow(sin(y), 2)) * (1 + z + pow(z, 2) / 2 + pow(z, 3) / 3 + pow(z, 4) / 4);
+	
+	cout << "–езультат равен: " << s;
+
+	return 0;
+}
