@@ -34,14 +34,15 @@ private:
 
 	};
 
-	Item* head, *tail;
+	Item* head, * tail;
 	int size = 0;
-	iterator first = iterator(head);
-	iterator last = iterator(tail);
+	iterator first, last;
 
 	void initList(int data) {
 		head = new Item(data);
 		tail = head;
+		first = iterator(head);
+		last = iterator(tail);
 		size++;
 	}
 
@@ -154,34 +155,28 @@ public:
 		if (flag) list.appendItem(temp->data);
 	}
 
-	void insertionSort(iterator first, iterator last)
+	void insertionSort()
 	{
 		int nElems = getSize();
 		iterator in;
 		iterator out = first;
+		iterator previn;
+		out++;
 
 		while (out != last) // out - разделительный маркер
 		{
 			iterator temp = out; // Скопировать помеченный элемент
 			in = out; // Начать перемещения с out
-			while (in > first && a[in - 1] >= temp) // Пока не найден меньший элемент
+			previn = --in;
+			while (in != first && *previn >= *temp) // Пока не найден меньший элемент
 			{
-				a[in] = a[in - 1]; // Сдвинуть элемент вправо
+				in = previn; // Сдвинуть элемент вправо
 				--in; // Перейти на одну позицию влево
 			}
-			a[in] = temp; // Вставить помеченный элемент
+			in = temp; // Вставить помеченный элемент
+			previn = --in;
+			out++;
 		}
-	}
-
-	find(it first, it last, T key)
-	{
-
-		while (first != last)
-
-			if (*first++ == key) return true;
-
-		return false;
-
 	}
 };
 
@@ -199,9 +194,9 @@ int main() {
 	list1.copyToListAfterData(list2, list1.getMax());
 	list2.printList();
 
-	cout << list1.getSize() << endl << endl;
-	cout << list2.getSize() << endl << endl;
-	
+	list2.insertionSort();
+	list2.printList();
+
 
 	return 0;
 }
