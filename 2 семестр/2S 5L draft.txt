@@ -1,0 +1,190 @@
+#include <iostream>
+#include <ctime>
+using namespace std;
+
+class Tree {
+private:
+	struct tNode {
+		int data;
+		tNode* left;
+		tNode* right;
+
+		tNode(int data) {
+			this->data = data;
+			left = NULL;
+			right = NULL;
+		}
+	};
+
+	tNode* root;
+
+public:
+	Tree() {
+		root = NULL;
+	}
+	
+	template <typename T>
+	int append(T data, tNode* node = NULL) {
+		if (node == NULL) {
+			if (root == NULL) {
+				root = new tNode(data);
+				return 0;
+			}
+			node = root;
+		}
+
+		if (data < node->data) {
+			if (node->left == NULL) {
+				node->left = new tNode(data);
+			}
+			else {
+				append(data, node->left);
+			}
+		}
+
+		if (data >= node->data) {
+			if (node->right == NULL) {
+				node->right = new tNode(data);
+			}
+			else {
+				append(data, node->right);
+			}
+		}
+
+		return 0;
+	}
+
+	void print(tNode* node = NULL) {
+		if (node == NULL) {
+			node = root;
+		}
+
+		cout << node->data << " ";
+
+		if (node->left != NULL) {
+			print(node->left);
+		}
+
+		if (node->right != NULL) {
+			print(node->right);
+		}
+
+		if (node == root) {
+			cout << endl << endl;
+		}
+	}
+
+	template <typename T>
+	int deleteNode(T data, tNode* node = NULL) {
+		if (node == NULL) {
+			node = root;
+		}
+
+		//удаление листа
+
+		if (node->left != NULL) {
+			if (node->left->data == data && node->left->left == NULL && node->left->right == NULL) {
+				delete node->left;
+				node->left = NULL;
+				return 0;
+			}
+		}
+
+		if (node->right != NULL) {
+			if (node->right->data == data && node->right->left == NULL && node->right->right == NULL) {
+				delete node->right;
+				node->right = NULL;
+				return 0;
+			}
+		}
+
+		//удаление узла с одним поддеревом
+
+		if (node->left != NULL) {
+			if (node->left->data == data && node->left->left != NULL && node->left->right == NULL) {
+				tNode* temp = node->left;
+				node->left = node->left->left;
+				delete temp;
+			}
+
+			if (node->left->data == data && node->left->left == NULL && node->left->right != NULL) {
+				tNode* temp = node->left;
+				node->left = node->left->right;
+				delete temp;
+				return 0;
+			}
+		}
+
+		if (node->right != NULL) {
+			if (node->right->data == data && node->right->left != NULL && node->right->right == NULL) {
+				tNode* temp = node->right;
+				node->right = node->right->left;
+				delete temp;
+			}
+
+			if (node->right->data == data && node->right->left == NULL && node->right->right != NULL) {
+				tNode* temp = node->right;
+				node->right = node->right->right;
+				delete temp;
+				return 0;
+			}
+		}
+
+		//удаление узла с двумя поддеревьями: случай, когда самый левый элемент правого поддерева — лист
+
+		if (node->left != NULL) {
+			if (node->left->data == data && node->left->left != NULL && node->left->right != NULL) {
+				tNode* temp = node->left;
+				tNode* leftSheet = node->left;
+
+				if (leftSheet->right->left != NULL) {
+					while (leftSheet->left != NULL) {
+						leftSheet->left = leftSheet->left->left;
+					}
+
+				}
+				else { //TODO
+				}
+
+				node->left = leftSheet;
+				node->left->right = temp->right;
+				delete temp;
+				return 0;
+			}
+		}
+
+		if (node->left != NULL) {
+			deleteNode(data, node->left);
+		}
+
+		if (node->right != NULL) {
+			deleteNode(data, node->right);
+		}
+	}
+
+};
+
+
+int main() {
+	setlocale(0, "");
+	srand(time(NULL));
+
+	Tree tree = Tree();
+
+	int arr[] = {6, 9, 3, 7, 8, 2, 4, 1, 5, 15, 12, 11, 13};
+
+	for (int i = 0; i < 13; i++) {
+		tree.append(arr[i]);
+	}
+
+	/*for (int i = 0; i < 30; i++) {
+		tree.append(rand() % 100 - 50);
+	}*/
+
+	tree.print();
+	tree.deleteNode(3);
+	tree.print();
+
+
+	return 0;
+}
