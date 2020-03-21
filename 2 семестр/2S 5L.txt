@@ -29,6 +29,10 @@ public:
 	Tree() {
 		root = NULL;
 	}
+
+	~Tree() {
+		deleteTree();
+	}
 	
 	template <typename T>
 	int append(T data, tNode* node = NULL) {
@@ -251,6 +255,25 @@ public:
 		}
 
 		return 1;
+	}
+
+	void deleteTree(tNode* node = NULL) {
+		if (node == NULL) {
+			node = getRoot();
+		}
+
+		if (node->left != NULL) {
+			deleteTree(node->left);
+		}
+
+		if (node->right != NULL) {
+			deleteTree(node->right);
+		}
+
+		delete node;
+		if (getRoot() != NULL) {
+			setRoot(NULL);
+		}
 	}
 
 };
