@@ -59,7 +59,7 @@ public:
 		return 0;
 	}
 
-	void print(tNode* node = NULL) {
+	void printTree(tNode* node = NULL) {
 		if (node == NULL) {
 			node = root;
 		}
@@ -67,11 +67,51 @@ public:
 		cout << node->data << " ";
 
 		if (node->left != NULL) {
-			print(node->left);
+			printTree(node->left);
 		}
 
 		if (node->right != NULL) {
-			print(node->right);
+			printTree(node->right);
+		}
+
+		if (node == root) {
+			cout << endl << endl;
+		}
+	}
+
+	void printTreeReverse(tNode* node = NULL) {
+		if (node == NULL) {
+			node = root;
+		}
+
+		if (node->left != NULL) {
+			printTreeReverse(node->left);
+		}
+
+		if (node->right != NULL) {
+			printTreeReverse(node->right);
+		}
+
+		cout << node->data << " ";
+
+		if (node == root) {
+			cout << endl << endl;
+		}
+	}
+
+	void printTreeAscending(tNode* node = NULL) {
+		if (node == NULL) {
+			node = root;
+		}
+
+		if (node->left != NULL) {
+			printTreeAscending(node->left);
+		}
+
+		cout << node->data << " ";
+
+		if (node->right != NULL) {
+			printTreeAscending(node->right);
 		}
 
 		if (node == root) {
@@ -190,6 +230,56 @@ public:
 		return getRoot();
 	}
 
+	template <typename T>
+	tNode* searchNode(T data, tNode* node = NULL) {
+		if (node == NULL) {
+			node = root;
+		}
+
+		if (node->data == data) {
+			return node;
+		}
+
+		if (node->left != NULL) {
+			tNode* temp = searchNode(data, node->left);
+			if (temp != NULL) return temp;
+		}
+
+		if (node->right != NULL) {
+			tNode* temp = searchNode(data, node->right);
+			if (temp != NULL) return temp;
+		}
+
+		return NULL;
+	}
+
+	int getMaxDeep(tNode* node = NULL) {
+		int leftDeep = 0, rightDeep = 0;
+
+		if (node == NULL) {
+			node = root;
+		}
+
+		if (node->left != NULL) {
+			leftDeep = getMaxDeep(node->left);
+		}
+
+		if (node->right != NULL) {
+			rightDeep = getMaxDeep(node->right);
+		}
+
+		if (leftDeep || rightDeep) {
+			if (leftDeep > rightDeep) {
+				return leftDeep + 1;
+			}
+			else {
+				return rightDeep + 1;
+			}
+		}
+
+		return 1;
+	}
+
 };
 
 
@@ -199,19 +289,21 @@ int main() {
 
 	Tree tree = Tree();
 
-	int arr[] = {6, 9, 3, 7, 8, 2, 4, 1, 5, 15, 12, 11, 13};
+	/*int arr[] = {6, 3, 2, 1, 4, 5, 9, 7, 8, 15, 12, 11, 13};
 
-	for (int i = 0; i < 13; i++) {
+	for (int i = 0; i < sizeof(arr)/sizeof(arr[0]); i++) {
 		tree.append(arr[i]);
-	}
-
-	/*for (int i = 0; i < 30; i++) {
-		tree.append(rand() % 100 - 50);
 	}*/
 
-	tree.print();
-	tree.deleteNode(6);
-	tree.print();
+	for (int i = 0; i < 100; i++) {
+		tree.append(rand() % 100 - 50);
+	}
+
+	tree.printTree();
+	tree.printTreeReverse();
+	tree.printTreeAscending();
+
+	cout << tree.getMaxDeep() << endl;
 
 	return 0;
 }
