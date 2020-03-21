@@ -24,6 +24,8 @@ private:
 	}
 
 public:
+	const string REVERSE = "reverse", ASCENDING = "ascending";
+
 	Tree() {
 		root = NULL;
 	}
@@ -59,59 +61,30 @@ public:
 		return 0;
 	}
 
-	void printTree(tNode* node = NULL) {
+	void printTree(string type = "default", tNode* node = NULL) {
+		//default - прямой вывод, reverse - обратный вывод, ascending - вывод по возрастанию
 		if (node == NULL) {
 			node = root;
 		}
-
-		cout << node->data << " ";
-
-		if (node->left != NULL) {
-			printTree(node->left);
-		}
-
-		if (node->right != NULL) {
-			printTree(node->right);
-		}
-
-		if (node == root) {
-			cout << endl << endl;
-		}
-	}
-
-	void printTreeReverse(tNode* node = NULL) {
-		if (node == NULL) {
-			node = root;
+		
+		if (type == "default") {
+			cout << node->data << " ";
 		}
 
 		if (node->left != NULL) {
-			printTreeReverse(node->left);
+			printTree(type, node->left);
+		}
+
+		if (type == "ascending") {
+			cout << node->data << " ";
 		}
 
 		if (node->right != NULL) {
-			printTreeReverse(node->right);
+			printTree(type, node->right);
 		}
 
-		cout << node->data << " ";
-
-		if (node == root) {
-			cout << endl << endl;
-		}
-	}
-
-	void printTreeAscending(tNode* node = NULL) {
-		if (node == NULL) {
-			node = root;
-		}
-
-		if (node->left != NULL) {
-			printTreeAscending(node->left);
-		}
-
-		cout << node->data << " ";
-
-		if (node->right != NULL) {
-			printTreeAscending(node->right);
+		if (type == "reverse") {
+			cout << node->data << " ";
 		}
 
 		if (node == root) {
@@ -289,19 +262,19 @@ int main() {
 
 	Tree tree = Tree();
 
-	/*int arr[] = {6, 3, 2, 1, 4, 5, 9, 7, 8, 15, 12, 11, 13};
+	int arr[] = {6, 3, 2, 1, 4, 5, 9, 7, 8, 15, 12, 11, 13};
 
 	for (int i = 0; i < sizeof(arr)/sizeof(arr[0]); i++) {
 		tree.append(arr[i]);
-	}*/
-
-	for (int i = 0; i < 100; i++) {
-		tree.append(rand() % 100 - 50);
 	}
 
+	/*for (int i = 0; i < 100; i++) {
+		tree.append(rand() % 100 - 50);
+	}*/
+
 	tree.printTree();
-	tree.printTreeReverse();
-	tree.printTreeAscending();
+	tree.printTree(tree.REVERSE);
+	tree.printTree(tree.ASCENDING);
 
 	cout << tree.getMaxDeep() << endl;
 
