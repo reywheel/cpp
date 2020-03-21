@@ -18,6 +18,11 @@ private:
 
 	tNode* root;
 
+	tNode* setRoot(tNode* newRoot) {
+		this->root = newRoot;
+		return this->root;
+	}
+
 public:
 	Tree() {
 		root = NULL;
@@ -74,92 +79,115 @@ public:
 		}
 	}
 
+	tNode* getRoot() {
+		return root;
+	}
+
 	template <typename T>
-	int deleteNode(T data, tNode* node = NULL) {
-		if (node == NULL) {
-			node = root;
-		}
+	tNode* deleteNode(T data)
+	{
+		tNode* ps = getRoot() , * pr = getRoot(), * w = NULL, * v = NULL;
 
-		//удаление листа
+		// Поиск удаляемого узла
+		while ((ps != NULL) && (ps->data != data))
+		{
+			pr = ps;
 
-		if (node->left != NULL) {
-			if (node->left->data == data && node->left->left == NULL && node->left->right == NULL) {
-				delete node->left;
-				node->left = NULL;
-				return 0;
+			if (data < ps->data) {
+				ps = ps->left;
+			}
+			else {
+				ps = ps->right;
 			}
 		}
+		if (ps == NULL) return getRoot(); // Если узел не найден
 
-		if (node->right != NULL) {
-			if (node->right->data == data && node->right->left == NULL && node->right->right == NULL) {
-				delete node->right;
-				node->right = NULL;
-				return 0;
-			}
-		}
-
-		//удаление узла с одним поддеревом
-
-		if (node->left != NULL) {
-			if (node->left->data == data && node->left->left != NULL && node->left->right == NULL) {
-				tNode* temp = node->left;
-				node->left = node->left->left;
-				delete temp;
+		// Если узел не имеет дочерей
+		if ((ps->left == NULL) && (ps->right == NULL))
+		{
+			if (ps == pr) // Если это был последний элемент
+			{
+				delete(ps);
+				return NULL;
 			}
 
-			if (node->left->data == data && node->left->left == NULL && node->left->right != NULL) {
-				tNode* temp = node->left;
-				node->left = node->left->right;
-				delete temp;
-				return 0;
+			if (pr->left == ps) { // Если удаляемый узел слева
+				pr->left = NULL;
 			}
-		}
-
-		if (node->right != NULL) {
-			if (node->right->data == data && node->right->left != NULL && node->right->right == NULL) {
-				tNode* temp = node->right;
-				node->right = node->right->left;
-				delete temp;
+			else { // Если удаляемый узел справа
+				pr->right = NULL;
 			}
 
-			if (node->right->data == data && node->right->left == NULL && node->right->right != NULL) {
-				tNode* temp = node->right;
-				node->right = node->right->right;
-				delete temp;
-				return 0;
+			delete(ps);
+			return getRoot();
+		}
+		// Если узел имеет дочь только справа
+		if (ps->left == NULL)
+		{
+			if (ps == pr) // Если удаляется корень
+			{
+				ps = ps->right;
+				delete(pr);
+				return ps;
 			}
+
+			if (pr->left == ps) // Если удаляемый узел слева
+				pr->left = ps->right;
+			else // Если удаляемый узел спава
+				pr->right = ps->right;
+			delete(ps);
+			return getRoot();
 		}
+		// Если узел имеет дочь только слева
+		if (ps->right == NULL) {
 
-		//удаление узла с двумя поддеревьями: случай, когда самый левый элемент правого поддерева — лист
-
-		if (node->left != NULL) {
-			if (node->left->data == data && node->left->left != NULL && node->left->right != NULL) {
-				tNode* temp = node->left;
-				tNode* leftSheet = node->left;
-
-				if (leftSheet->right->left != NULL) {
-					while (leftSheet->left != NULL) {
-						leftSheet->left = leftSheet->left->left;
-					}
-
-				}
-				else { //TODO
-				}
-
-				node->left = leftSheet;
-				node->left->right = temp->right;
-				delete temp;
-				return 0;
+			if (ps == pr) { // Если удаляется корень
+				ps = ps->left;
+				delete(pr);
+				return ps;
 			}
+
+			if (pr->left == ps) { // Если удаляемый узел слева
+				pr->left = ps->left;
+			}
+			else { // Если удаляемый узел спава
+				pr->right = ps->left;
+			}
+
+			delete(ps);
+			return getRoot();
 		}
 
-		if (node->left != NULL) {
-			deleteNode(data, node->left);
+		// Если узел имеет двух дочерей
+		w = ps->left;
+
+		if (w->right == NULL) {// Если максимальный следует за ps
+			w->right = ps->right;
+		}
+		else { // Если максимальный не следует за ps
+			while (w->right != NULL) {
+				v = w;
+				w = w->right;
+			}
+			v->right = w->left;
+			w->left = ps->left;
+			w->right = ps->right;
 		}
 
-		if (node->right != NULL) {
-			deleteNode(data, node->right);
+		if (ps == pr) { // Если удаляется корень 
+			delete(ps);
+			return setRoot(w);
 		}
+
+		if (pr->left == ps) {// Если удаляемый узел слева
+			pr->left = w;
+		}
+		else { // Если удаляемый узел справа
+			pr->right = w;
+		}
+
+		delete(ps);
+		return getRoot();
 	}
 
 };
@@ -182,9 +210,11 @@ int main() {
 	}*/
 
 	tree.print();
-	tree.deleteNode(3);
+	tree.deleteNode(6);
 	tree.print();
-
 
 	return 0;
 }
+
+// Вопросы:
+// Есть ли разница, удалять самый правый лист из левого дерева или самый левый лист из правого дерева?
