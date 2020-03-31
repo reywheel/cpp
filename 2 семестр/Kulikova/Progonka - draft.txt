@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Matrix {
+private:
+	vector<vector<int>> matrix;
+
+	void init(int quantity) {
+		matrix.resize(quantity);
+		for (int i = 0; i < quantity; i++) {
+			matrix[i].resize(quantity + 1);
+		}
+	}
+
+	bool isCorrect() {
+		bool flag = true;
+
+		for (int i = 2; i < matrix.size(); i++) {
+			for (int j = 0; j < i - 1; j++) {
+				if (matrix[i][j] != 0 || matrix[j][i] != 0) flag = false;
+			}
+		}
+
+		return flag;
+	}
+
+public:
+	Matrix() {
+		int quantity = 0;
+		while (quantity < 3) {
+			cout << "Введите количество переменных: ";
+			cin >> quantity;
+			if (quantity >= 3) {
+				init(quantity);
+			}
+			else {
+				cout << "Ошибка! Уравнение с таким количеством переменных нельзя решить методом прогонки! Повторите ввод!" << endl << endl;
+			}
+		}
+		cout << endl;
+	}
+
+	void fill() {
+		bool flag = false;
+
+		while (!flag) {
+			for (int i = 0; i < matrix.size(); i++) {
+				cout << "Введите элемнты " << i + 1 << " строки: ";
+				for (int j = 0; j < matrix[0].size(); j++) {
+					cin >> matrix[i][j];
+				}
+			}
+
+			flag = isCorrect();
+			if (!flag) {
+				cout << "Матрица введена неверно! Матрица должна иметь трёх- или пятидиагональный вид!" << endl;
+				cout << "Повторите ввод матрицы!" << endl << endl;
+			}
+		}
+
+		cout << endl;
+	}
+
+	void print() {
+		for (int i = 0; i < matrix.size(); i++) {
+			for (int j = 0; j < matrix[0].size(); j++) {
+				cout << matrix[i][j] << " ";
+			}
+			cout << endl;
+		}
+	}
+
+	void progonka() {
+		int a = -1, b = 0, c = 1;
+
+	}
+};
+
+int main() {
+	setlocale(0, "");
+
+	Matrix* matrix = new Matrix();
+	matrix->fill();
+	matrix->print();
+
+	return 0;
+}
