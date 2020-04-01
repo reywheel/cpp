@@ -69,11 +69,59 @@ public:
 			}
 			cout << endl;
 		}
+		cout << endl;
 	}
 
 	void progonka() {
-		int a = -1, b = 0, c = 1;
+		int a = 0, b = 1, c = 2, d = matrix.size() + 1;
+		vector<float> roots(matrix.size() + 2, 0);
+		struct sCoef {
+			float y;
+			float alpha;
+			float beta;
 
+			sCoef() {
+				y = 0;
+				alpha = 0;
+				beta = 0;
+			}
+		};
+
+		vector<vector<int>> temp;
+		temp.resize(matrix.size() + 1);
+		for (int i = 0; i < temp.size(); i++) {
+			for (int j = 0; j < matrix[0].size() + 1; j++) {
+				if (i == 0) {
+					temp[i].push_back(0);
+				}
+				else {
+					if (j == 0) {
+						temp[i].push_back(0);
+					}
+					else {
+						temp[i].push_back(matrix[i-1][j-1]);
+					}
+				}
+			}
+		}
+
+		vector<sCoef> coef;
+		coef.resize(matrix.size() + 1);
+
+		for (int i = 1; i < temp.size(); i++) {
+			coef[i].y = temp[i][b] + temp[i][a] * coef[i - 1].alpha;
+			coef[i].alpha = -temp[i][c] / coef[i].y;
+			coef[i].beta = (temp[i][d] - temp[i][a] * coef[i - 1].beta) / coef[i].y;
+			a++; b++; c++;
+
+			cout << coef[i].y << " " << coef[i].alpha << " " << coef[i].beta << endl;
+		}
+		cout << endl;
+
+		for (int i = temp.size() - 1; i >= 1; i--) {
+			roots[i] = coef[i].alpha * roots[i + 1] + coef[i].beta;
+			cout << roots[i] << " ";
+		}
 	}
 };
 
@@ -83,6 +131,7 @@ int main() {
 	Matrix* matrix = new Matrix();
 	matrix->fill();
 	matrix->print();
+	matrix->progonka();
 
 	return 0;
 }
