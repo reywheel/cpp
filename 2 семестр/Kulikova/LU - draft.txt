@@ -1,0 +1,149 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Matrix {
+private:
+	vector<vector<float>> matrix;
+
+	void init(int quantity) {
+		matrix.resize(quantity);
+		for (int i = 0; i < quantity; i++) {
+			matrix[i].resize(quantity + 1);
+		}
+	}
+
+public:
+	Matrix() {
+		int quantity = 0;
+		while (quantity < 2) {
+			cout << "Введите количество переменных: ";
+			cin >> quantity;
+			if (quantity >= 2) {
+				init(quantity);
+			}
+			else {
+				cout << "Ошибка! Неверное количество переменных! Повторите ввод!" << endl << endl;
+			}
+		}
+		cout << endl;
+	}
+
+	void fill() {
+		for (int i = 0; i < matrix.size(); i++) {
+			cout << "Введите элемнты " << i + 1 << " строки: ";
+			for (int j = 0; j < matrix[0].size(); j++) {
+				cin >> matrix[i][j];
+			}
+		}
+
+		cout << endl;
+	}
+
+	void print() {
+		for (int i = 0; i < matrix.size(); i++) {
+			for (int j = 0; j < matrix[0].size(); j++) {
+				cout << matrix[i][j] << " ";
+			}
+			cout << endl;
+		}
+		cout << endl;
+	}
+
+
+	int LU() {
+		float leadElement, coeff, temp, subtrahend;
+		int size = matrix.size();
+		vector<vector<float>> L(size);
+		vector<vector<float>> U(size);
+		vector <float> y(size, 0);
+		vector <float> x(size, 0);
+
+		for (int i = 0; i < size; i++) {
+			L[i].resize(size);
+			U[i] = matrix[i];
+			U[i].resize(size);
+			L[i][i] = 1;
+
+		}
+
+		for (int i = 0; i < size; i++) {
+			if (U[i][i] == 0) {
+				for (int j = 0; j < size; j++) {
+					if (U[j][j] != 0) {
+						vector<float> buff(size);
+						buff = U[0];
+						U[0] = U[j];
+						U[j] = buff;
+						i--;
+						break;
+					}
+				}
+			}
+			else {
+				leadElement = U[i][i];
+				for (int m = i + 1; m < size; m++) {
+					if (U[m][i] != 0) {
+						temp = U[m][i] / leadElement;
+						coeff = -temp;
+						L[m][i] = temp;
+
+						for (int n = i; n < size; n++) {
+							U[m][n] = U[i][n] * coeff + U[m][n];
+						}
+					}
+				}
+			}
+
+		}
+
+		for (int i = 0; i < size; i++) {
+			subtrahend = 0;
+			for (int j = 0; j < i; j++) {
+				subtrahend += L[i][j] * y[j];
+			}
+			y[i] = matrix[i][size] - subtrahend;
+		}
+
+		for (int i = size - 1; i >= 0; i--) {
+			subtrahend = 0;
+			for (int j = size - 1; j > i; j--) {
+				subtrahend += x[j] * U[i][j];
+
+			}
+			x[i] = round((y[i] - subtrahend) / U[i][i]);
+		}
+		
+		for (int i = 0; i < size; i++) {
+			cout << "x" << i + 1 << " = " << x[i] << endl;
+		}
+		return 0;
+	}
+
+};
+
+int main() {
+	setlocale(0, "");
+
+	Matrix matrix = Matrix();
+	matrix.fill();
+	matrix.print();
+	matrix.LU();
+
+	return 0;
+}
+
+//1 4 -3 1
+//-2 8 5 2
+//3 4 7 4
+
+//-9 -1 0 -1 -68
+//-1 3 6 1 -28
+//0 6 -5 -3 28
+//-1 1 -3 1 13
+
+//-3 3 -6 6 21
+//3 0 -2 -10 -129
+//-6 -2 9 -7 61
+//6 -10 -7 -10 -106

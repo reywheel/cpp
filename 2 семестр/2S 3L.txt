@@ -131,7 +131,7 @@ public:
 				} 
 			}
 			if (!flag) {
-				arr[current++] = this->arr[i];
+				arr[current++].word = this->arr[i];
 			}
 		}
 

@@ -1,0 +1,142 @@
+#include <iostream>
+#include <ctime>
+using namespace std;
+
+class Matrix {
+private:
+    int m, n;
+    float** matrix;
+    float* roots;
+    int startTime, endTime, searchTime;
+
+    int initMatrix() {
+        matrix = new float*[m];
+
+        for (int i = 0; i < m; i++) {
+            matrix[i] = new float[n];
+        };
+
+        return 0;
+    }
+
+    int initRoots() {
+        roots = new float[n - 1];
+        for (int i = 0; i < n; i++) {
+            roots[i] = 0;
+        }
+
+        return 0;
+    }
+
+    int PrintRoots() {
+        cout << "Корни: ";
+        for (int i = 0; i < n - 1; i++) {
+            cout << roots[i] << " ";
+        }
+        cout << endl << endl;
+
+        return 0;
+    }
+
+public: 
+    Matrix() {
+        cout << "Введите количество переменных: ";
+        cin >> m;
+        cout << endl;
+
+        this->m = m;
+        this->n = m+1;
+
+        initMatrix();
+        initRoots();
+    }
+
+
+
+    int printMatrix() {
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                cout << matrix[i][j] << " ";
+            }
+            cout << endl;
+        }
+        
+        return 0;
+    }
+
+    int fillMatrix() {
+        for (int i = 0; i < m; i++) {
+            cout << "Вводите элементы " << i+1 << "-й строки: " << endl;
+            for (int j = 0; j < n; j++) {
+                cin >> matrix[i][j];
+            }
+            cout << endl;
+        }
+        startTime = clock();
+
+        return 0;
+    }
+
+    int methodGaussa() {
+        float leadElement, coeff;
+
+        for (int i = 0; i < this->m - 1; i++) {
+            if (matrix[i][i] == 0) {
+                for (int j = 0; j < m; j++) {
+                    if (matrix[j][j] != 0) {
+                        float* buff = new float[m];
+                        buff = matrix[0];
+                        matrix[0] = matrix[j];
+                        matrix[j] = buff;
+                        i--;
+                        break;
+                    }
+                }
+            }
+            else {
+                leadElement = matrix[i][i];
+                for (int m = i + 1; m < this->m; m++) {
+                    if (matrix[m][i] != 0) {
+                        coeff = leadElement / matrix[m][i];
+                        for (int n = i; n < this->n; n++) {
+                            matrix[m][n] = matrix[m][n] * coeff - matrix[i][n];
+                        }
+                    }
+                }
+            }
+            
+        }
+
+        for (int i = this->n - 2; i >= 0; i--) {
+            float deductible = 0;
+            for (int j = this->m-1; j > 0; j--) {
+                deductible = deductible + (matrix[i][j] * roots[j]);
+            }
+            roots[i] = round( (matrix[i][this->m] - deductible) / matrix[i][i] );
+            //roots[i] = round( (matrix[i][4] - matrix[i][3] * roots[3] - matrix[i][2] * roots[2] - matrix[i][1] * roots[1]) / matrix[i][i] );
+        }
+
+        endTime = clock();
+
+        PrintRoots();
+
+        searchTime = endTime - startTime;
+        cout << "Время: " << ((float)searchTime) / CLOCKS_PER_SEC << endl;
+
+
+
+        return 0;
+    }
+
+    
+};
+
+int main()
+{
+    setlocale(0, "");
+    Matrix matrix = Matrix();
+    matrix.fillMatrix();
+    matrix.methodGaussa();
+
+    return 0;
+}
