@@ -7,7 +7,7 @@ class Matrix {
 private:
 	vector<vector<float>> matrix;
 
-	void init(int quantity) {
+	void init(int quantity) { // выделяю место под матрицу
 		matrix.resize(quantity);
 		for (int i = 0; i < quantity; i++) {
 			matrix[i].resize(quantity + 1);
@@ -15,7 +15,7 @@ private:
 	}
 
 public:
-	Matrix() {
+	Matrix() { // в конструкторе запрашиваю количество переменных в уравнениях
 		int quantity = 0;
 		while (quantity < 2) {
 			cout << "Введите количество переменных: ";
@@ -30,7 +30,11 @@ public:
 		cout << endl;
 	}
 
-	void fill() {
+	~Matrix() { // в деструкторе очищаю матрицу
+		matrix.clear();
+	}
+
+	void fill() { // заполняю матрицу
 		for (int i = 0; i < matrix.size(); i++) {
 			cout << "Введите элемнты " << i + 1 << " строки: ";
 			for (int j = 0; j < matrix[0].size(); j++) {
@@ -41,7 +45,7 @@ public:
 		cout << endl;
 	}
 
-	void print() {
+	void print() { // вывожу матрицу
 		for (int i = 0; i < matrix.size(); i++) {
 			for (int j = 0; j < matrix[0].size(); j++) {
 				cout << matrix[i][j] << " ";
@@ -68,8 +72,8 @@ public:
 
 		}
 
-		for (int i = 0; i < size; i++) {
-			if (U[i][i] == 0) {
+		for (int i = 0; i < size; i++) { // начинаю прямой ход
+			if (U[i][i] == 0) { // проверяю ведущий элемент на 0. Если true, переставляю строки
 				for (int j = 0; j < size; j++) {
 					if (U[j][j] != 0) {
 						vector<float> buff(size);
@@ -77,14 +81,15 @@ public:
 						U[0] = U[j];
 						U[j] = buff;
 						i--;
+						buff.clear();
 						break;
 					}
 				}
 			}
 			else {
 				leadElement = U[i][i];
-				for (int m = i + 1; m < size; m++) {
-					if (U[m][i] != 0) {
+				for (int m = i + 1; m < size; m++) { // формирую upper матрицу, одновременно закидывая коэффициенты в lower матрицу
+					if (U[m][i] != 0) { 
 						temp = U[m][i] / leadElement;
 						coeff = -temp;
 						L[m][i] = temp;
@@ -98,7 +103,7 @@ public:
 
 		}
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) { // по рекурентной формуле нахожу игреки
 			subtrahend = 0;
 			for (int j = 0; j < i; j++) {
 				subtrahend += L[i][j] * y[j];
@@ -106,7 +111,7 @@ public:
 			y[i] = matrix[i][size] - subtrahend;
 		}
 
-		for (int i = size - 1; i >= 0; i--) {
+		for (int i = size - 1; i >= 0; i--) { // по рекурентной формуле нахожу иксы
 			subtrahend = 0;
 			for (int j = size - 1; j > i; j--) {
 				subtrahend += x[j] * U[i][j];
@@ -118,6 +123,11 @@ public:
 		for (int i = 0; i < size; i++) {
 			cout << "x" << i + 1 << " = " << x[i] << endl;
 		}
+
+		L.clear();
+		U.clear();
+		x.clear();
+		y.clear();
 		return 0;
 	}
 
