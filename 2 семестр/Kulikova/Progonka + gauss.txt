@@ -1,0 +1,206 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Matrix {
+private:
+	vector<vector<float>> matrix = { {-7, -5, -9, 4}, {-5, -4, 5, 3}, {-9, 5, 1, 7}, {4, 3, 7, -10} };
+	vector<float> b = { -67, -18, 13, 122 };
+
+	void init(int quantity) {
+		matrix.resize(quantity);
+		for (int i = 0; i < quantity; i++) {
+			matrix[i].resize(quantity + 1);
+		}
+	}
+
+public:
+	Matrix() {
+		int quantity = 0;
+		while (quantity < 3) {
+			cout << "Введите количество переменных: ";
+			cin >> quantity;
+			if (quantity >= 3) {
+				//init(quantity);
+			}
+			else {
+				cout << "Ошибка! Уравнение с таким количеством переменных нельзя решить методом прогонки! Повторите ввод!" << endl << endl;
+			}
+		}
+		cout << endl;
+	}
+
+	void fill() {
+		bool flag = false;
+
+		while (!flag) {
+			for (int i = 0; i < matrix.size(); i++) {
+				cout << "Введите элемнты " << i + 1 << " строки: ";
+				for (int j = 0; j < matrix[0].size(); j++) {
+					cin >> matrix[i][j];
+				}
+			}
+
+		}
+
+		cout << endl;
+	}
+
+	void print() {
+		for (int i = 0; i < matrix.size(); i++) {
+			for (int j = 0; j < matrix[0].size(); j++) {
+				cout << matrix[i][j] << " ";
+			}
+			cout << b[i];
+			cout << endl;
+		}
+		cout << endl;
+	}
+
+	int methodGaussa() {
+		float leadElement, coeff;
+
+		for (int i = 0; i < matrix.size() - 1; i++) {
+			if (matrix[i][i] == 0) {
+				for (int j = 0; j < matrix.size(); j++) {
+					if (matrix[j][j] != 0) {
+						matrix[0].swap(matrix[j]);
+						i--;
+						break;
+					}
+				}
+			}
+			else {
+				leadElement = matrix[i][i];
+				for (int m = i + 2; m < matrix.size(); m++) {
+					if (matrix[m][i] != 0) {
+						coeff = leadElement / matrix[m][i];
+						for (int n = i; n < matrix[0].size(); n++) {
+							matrix[m][n] = floor((matrix[m][n] * coeff - matrix[i][n]) * 100) / 100;
+						}
+						b[m] = floor((b[m] * coeff - b[i]) * 100) / 100; ;
+					}
+				}
+			}
+
+		}
+
+		return 0;
+	}
+
+	void reverseMatrix() {
+		vector <float> temp;
+		int size = matrix.size();
+		for (int i = 0; i < size / 2; i++) {
+			matrix[i].swap(matrix[size - 1 - i]);
+		}
+
+		temp = b;
+		b.clear();
+		for (int j = temp.size() - 1; j >= 0; j--) {
+			b.push_back(temp[j]);
+		}
+
+		for (int i = 0; i < matrix.size(); i++) {
+			temp = matrix[i];
+			matrix[i].clear();
+			for (int j = temp.size() - 1; j >= 0; j--) {
+				matrix[i].push_back(temp[j]);
+			}
+		}
+	}
+
+	void progonka() {
+		for (int i = 0; i < matrix.size(); i++) {
+			matrix[i].push_back(b[i]);
+		}
+
+		int a = 0, b = 1, c = 2, d = matrix.size() + 1;
+		vector<float> roots(matrix.size() + 2, 0);
+		struct sCoef {
+			float y;
+			float alpha;
+			float beta;
+
+			sCoef() {
+				y = 0;
+				alpha = 0;
+				beta = 0;
+			}
+		};
+
+		vector<vector<float>> temp;
+		temp.resize(matrix.size() + 1);
+		for (int i = 0; i < temp.size(); i++) {
+			for (int j = 0; j < matrix[0].size() + 1; j++) {
+				if (i == 0) {
+					temp[i].push_back(0);
+				}
+				else {
+					if (j == 0) {
+						temp[i].push_back(0);
+					}
+					else {
+						temp[i].push_back(matrix[i - 1][j - 1]);
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < temp.size(); i++) {
+			for (int j = 0; j < temp[i].size(); j++) {
+				cout << temp[i][j] << " ";
+			}
+			cout << endl;
+		}
+
+		vector<sCoef> coef;
+		coef.resize(matrix.size() + 1);
+
+		for (int i = 1; i < temp.size(); i++) {
+			coef[i].y = temp[i][b] + temp[i][a] * coef[i - 1].alpha;
+			coef[i].alpha = -temp[i][c] / coef[i].y;
+			coef[i].beta = (temp[i][d] - temp[i][a] * coef[i - 1].beta) / coef[i].y;
+			a++; b++; c++;
+
+			//cout << coef[i].y << " " << coef[i].alpha << " " << coef[i].beta << endl;
+		}
+		cout << endl;
+
+		for (int i = temp.size() - 1; i >= 1; i--) {
+			roots[i] = coef[i].alpha * roots[i + 1] + coef[i].beta;
+			cout << roots[i] << " ";
+		}
+	}
+
+	bool isCorrect() {
+		bool flag = true;
+
+		for (int i = 2; i < matrix.size(); i++) {
+			for (int j = 0; j < i - 1; j++) {
+				if (matrix[i][j] != 0 || matrix[j][i] != 0) flag = false;
+			}
+		}
+
+		return flag;
+	}
+};
+
+int main() {
+	setlocale(0, "");
+
+	Matrix matrix = Matrix();
+	matrix.methodGaussa();
+	matrix.print();
+	matrix.reverseMatrix();
+	matrix.print();
+	matrix.methodGaussa();
+	matrix.print();
+	matrix.reverseMatrix();
+	matrix.print();
+	//cout << matrix.isCorrect();
+	matrix.progonka();
+
+
+	return 0;
+}

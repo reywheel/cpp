@@ -1,19 +1,20 @@
 #include <iostream>
 #include <vector>
+#include <math.h>
 using namespace std;
 
 class Matrix {
 private:
 	vector<vector<int>> matrix;
 
-	void init(int quantity) {
+	void init(int quantity) { // выделяю место под матрицу
 		matrix.resize(quantity);
 		for (int i = 0; i < quantity; i++) {
 			matrix[i].resize(quantity + 1);
 		}
 	}
 
-	bool isCorrect() {
+	bool isCorrect() { // проверяю, соответствует ли матрица трёхдиагональному виду
 		bool flag = true;
 
 		for (int i = 2; i < matrix.size(); i++) {
@@ -26,7 +27,7 @@ private:
 	}
 
 public:
-	Matrix() {
+	Matrix() { // в конструкторе запрашиваю количество переменных и его на корректность
 		int quantity = 0;
 		while (quantity < 3) {
 			cout << "Введите количество переменных: ";
@@ -41,7 +42,7 @@ public:
 		cout << endl;
 	}
 
-	void fill() {
+	void fill() { // заполняю матрицу
 		bool flag = false;
 
 		while (!flag) {
@@ -62,7 +63,7 @@ public:
 		cout << endl;
 	}
 
-	void print() {
+	void print() { // вывожу матрицу
 		for (int i = 0; i < matrix.size(); i++) {
 			for (int j = 0; j < matrix[0].size(); j++) {
 				cout << matrix[i][j] << " ";
@@ -72,10 +73,10 @@ public:
 		cout << endl;
 	}
 
-	void progonka() {
+	void progonka() { //метод прогонки
 		int a = 0, b = 1, c = 2, d = matrix.size() + 1;
 		vector<float> roots(matrix.size() + 2, 0);
-		struct sCoef {
+		struct sCoef { // структура коэффициентов
 			float y;
 			float alpha;
 			float beta;
@@ -87,7 +88,9 @@ public:
 			}
 		};
 
-		vector<vector<int>> temp;
+		vector<vector<int>> temp; // Создаю временную матрицу, построенную на основе введённой матрицы.
+		// Добавляю нулевой столбец и нулевую строку в начало временной матрицы, чтобы в рекурентной формуле при вычисленнии корней
+		// коэффициенты, выходящие за пределы матрицы, оборачивали произведение в ноль.
 		temp.resize(matrix.size() + 1);
 		for (int i = 0; i < temp.size(); i++) {
 			for (int j = 0; j < matrix[0].size() + 1; j++) {
@@ -99,7 +102,7 @@ public:
 						temp[i].push_back(0);
 					}
 					else {
-						temp[i].push_back(matrix[i-1][j-1]);
+						temp[i].push_back(matrix[i - 1][j - 1]);
 					}
 				}
 			}
@@ -108,19 +111,18 @@ public:
 		vector<sCoef> coef;
 		coef.resize(matrix.size() + 1);
 
-		for (int i = 1; i < temp.size(); i++) {
+		for (int i = 1; i < temp.size(); i++) { // вычисляю коэффициенты
 			coef[i].y = temp[i][b] + temp[i][a] * coef[i - 1].alpha;
 			coef[i].alpha = -temp[i][c] / coef[i].y;
 			coef[i].beta = (temp[i][d] - temp[i][a] * coef[i - 1].beta) / coef[i].y;
 			a++; b++; c++;
 
-			cout << coef[i].y << " " << coef[i].alpha << " " << coef[i].beta << endl;
+			//cout << coef[i].y << " " << coef[i].alpha << " " << coef[i].beta << endl;
 		}
-		cout << endl;
 
-		for (int i = temp.size() - 1; i >= 1; i--) {
-			roots[i] = coef[i].alpha * roots[i + 1] + coef[i].beta;
-			cout << roots[i] << " ";
+		for (int i = temp.size() - 1; i >= 1; i--) { // вычисляю корни по рекурентной формуле
+			roots[i] = floor((coef[i].alpha * roots[i + 1] + coef[i].beta) * 100.0 + 0.5) / 100;
+			cout << "x" << i << " = " << roots[i] << endl;
 		}
 	}
 };
@@ -135,3 +137,9 @@ int main() {
 
 	return 0;
 }
+
+//2 -1 0 0 0 -25
+//-3 8 -1 0 0 72
+//0 -5 12 2 0 -69
+//0 0 -6 18 -4 -156
+//0 0 0 -5 10 20
