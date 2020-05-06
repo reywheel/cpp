@@ -1,0 +1,191 @@
+#include <iostream>
+#include <vector>
+#include <ctime>
+using namespace std;
+
+class Node {
+private:
+	struct sNode {
+		int id;
+		int iData;
+
+		sNode() {
+			id = -1;
+			iData = 0;
+		}
+	};
+
+	sNode node = sNode();
+
+public:
+	Node(int key) {
+		node.id = -1;
+		node.iData = key;
+	}
+
+	Node(int id, int key) {
+		node.id = id;
+		node.iData = key;
+	}
+
+	Node() {
+		node.id = -1;
+		node.iData = -1;
+	}
+
+	int getKey() {
+		return node.iData;
+	}
+
+	void setKey(int key) {
+		node.iData = key;
+	}
+
+	int getId() {
+		return node.id;
+	}
+
+	void setId(int id) {
+		node.id = id;
+	}
+};
+
+class Heap {
+private:
+	vector<Node> heapArray;
+	int maxSize, currentSize;
+
+public:
+	Heap(int max) {
+		maxSize = max;
+		currentSize = 0;
+		heapArray.resize(maxSize);
+	}
+
+	bool isEmpty() {
+		return currentSize == 0;
+	}
+
+	bool insert(int id, int key) {
+		if (currentSize == maxSize) return false;
+
+		Node newNode = Node(id, key);
+		heapArray[currentSize] = newNode;
+		trickleUp(currentSize++);
+		return true;
+	}
+
+	void trickleUp(int index) {
+		int parent = (index - 1) / 2;
+		Node bottom = heapArray[index];
+
+		while (index > 0 && heapArray[parent].getKey() < bottom.getKey()) {
+			heapArray[index] = heapArray[parent];
+			index = parent;
+			parent = (parent - 1) / 2;
+		}
+
+		heapArray[index] = bottom;
+	}
+
+	Node remove() {
+		Node root = heapArray[0];
+
+		if (!isEmpty() && maxSize > 1) {
+			heapArray[0] = heapArray[--currentSize];
+			trickleDown(0);
+		}
+		else {
+			heapArray[0].setId(-1);
+			heapArray[0].setKey(-1);
+		}
+
+		return root;
+	}
+
+	void trickleDown(int index) {
+		int largerChild;
+		Node top = heapArray[index];
+
+		while (index < currentSize/2) {
+			int leftChild = 2 * index + 1;
+			int rightChild = leftChild + 1;
+
+			if (rightChild < currentSize && heapArray[leftChild].getKey() < heapArray[rightChild].getKey()) {
+				largerChild = rightChild;
+			}
+			else {
+				largerChild = leftChild;
+			}
+
+			if (top.getKey() >= heapArray[largerChild].getKey()) break;
+
+			heapArray[index] = heapArray[largerChild];
+			index = largerChild;
+		}
+
+		heapArray[index] = top;
+	}
+
+	bool change(int id, int newValue, bool append = false) {
+		int currentIndex = -1;
+
+		for (int i = 0; i < heapArray.size(); i++) {
+			if (heapArray[i].getId() == id) {
+				currentIndex = i;
+			}
+		}
+
+		int oldValue = heapArray[currentIndex].getKey();
+
+		if (append) {
+			newValue = oldValue + newValue;
+		}
+
+		heapArray[currentIndex].setKey(newValue);
+
+		if (oldValue < newValue) {
+			trickleUp(currentIndex);
+		}
+		else {
+			trickleDown(currentIndex);
+		}
+
+		return true;
+	}
+
+};
+
+int main() {
+	setlocale(0, "");
+	int numberOfPeople;
+	cout << "Введите количество человек: ";
+	cin >> numberOfPeople;
+	cout << endl;
+
+	Heap list = Heap(numberOfPeople);
+
+	srand(time(0));
+
+	for (int i = 0; i < 10; i++) {
+		if (i == 0) {
+			for (int j = 1; j <= numberOfPeople; j++) {
+				list.insert(j, 0);
+			}
+		}
+		else {
+			for (int i = 1; i <= numberOfPeople; i++) {
+				list.change(i, rand() % 100, true);
+			}
+		}
+	}
+
+	
+
+	for (int i = 0; i < numberOfPeople; i++) {
+		Node node = list.remove();
+		cout << node.getId() << " " << node.getKey() << endl;
+	}
+
+	return 0;
+}
